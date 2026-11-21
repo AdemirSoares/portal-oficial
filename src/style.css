@@ -739,69 +739,8 @@ main {
   transform: translate(-50%, 0);
 }
 
-.panel-open,
-.ad-prompt-open {
+.panel-open {
   overflow: hidden;
-}
-
-.ad-prompt-overlay {
-  position: fixed;
-  z-index: 200;
-  inset: 0;
-  display: flex;
-  align-items: flex-end;
-  background: rgb(0 0 0 / 62%);
-}
-
-.ad-prompt-overlay[hidden] {
-  display: none;
-}
-
-.ad-prompt {
-  position: relative;
-  width: 100%;
-  min-height: 200px;
-  padding: 24px 24px 20px;
-  background: #4a4a4a;
-  color: #fff;
-  text-align: center;
-}
-
-.ad-prompt > p:first-of-type {
-  margin: 0 0 16px;
-  font-weight: 700;
-}
-
-.ad-prompt h2 {
-  margin: 0 0 14px;
-  font-size: 22px;
-}
-
-.ad-prompt > p:last-of-type {
-  margin: 0 0 20px;
-}
-
-.ad-prompt-close {
-  position: absolute;
-  top: 10px;
-  right: 12px;
-  border: 0;
-  background: none;
-  color: #fff;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-.ad-prompt-action {
-  min-width: 290px;
-  padding: 10px 18px;
-  border: 0;
-  border-radius: 3px;
-  background: #c6242b;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
 }
 
 @media (max-width: 1100px) {
@@ -1138,17 +1077,6 @@ main {
   .search-panel label { color: #b20d25; }
   .search-field input { padding: 10px 8px; }
   .search-field button { padding: 0 12px; min-height: 44px; }
-
-  .ad-prompt {
-    max-height: 100%;
-    overflow-y: auto;
-    padding: 24px 18px 20px;
-  }
-
-  .ad-prompt-action {
-    width: 100%;
-    min-width: 0;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

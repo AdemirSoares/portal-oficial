@@ -183,15 +183,6 @@ document.querySelector('#app').innerHTML = `
     <button class="search-close" id="closeSearch" aria-label="Fechar busca">×</button>
   </section>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <div class="ad-prompt-overlay" id="adPrompt" aria-hidden="true" hidden>
-    <section class="ad-prompt" role="dialog" aria-modal="true" aria-labelledby="adPromptTitle">
-      <button class="ad-prompt-close" id="closeAdPrompt" aria-label="Fechar aviso">×</button>
-      <p>Bem-vindo ao Portal Oficial</p>
-      <h2 id="adPromptTitle">Permita anúncios no nosso site</h2>
-      <p>Se você usa um bloqueador de anúncios, considere adicionar o Portal Oficial à lista de permissões. A publicidade ajuda a manter o nosso jornalismo no ar.</p>
-      <button class="ad-prompt-action" id="allowAds">Entendi, continuar</button>
-    </section>
-  </div>
 `;
 
 const menuButton = document.querySelector('#menuButton');
@@ -213,7 +204,6 @@ const categoryNewsGrid = document.querySelector('#categoryNewsGrid');
 const categoryEmpty = document.querySelector('#categoryEmpty');
 const notificationButton = document.querySelector('#notificationButton');
 const toast = document.querySelector('#toast');
-const adPrompt = document.querySelector('#adPrompt');
 let searchTerm = '';
 let notificationsEnabled = false;
 let toastTimeout;
@@ -387,33 +377,6 @@ function closePanels() {
   showPanel();
 }
 
-function dismissAdPrompt() {
-  adPrompt.classList.remove('open');
-  adPrompt.setAttribute('aria-hidden', 'true');
-  adPrompt.hidden = true;
-  document.body.classList.remove('ad-prompt-open');
-  try {
-    window.sessionStorage.setItem('portalOficialAdsPromptDismissed', 'true');
-  } catch (error) {
-    console.error('Não foi possível salvar a escolha do aviso de anúncios:', error);
-  }
-}
-
-function showAdPrompt() {
-  let dismissed = false;
-  try {
-    dismissed = window.sessionStorage.getItem('portalOficialAdsPromptDismissed') === 'true';
-  } catch (error) {
-    console.error('Não foi possível consultar a escolha do aviso de anúncios:', error);
-  }
-  if (dismissed) return;
-
-  adPrompt.hidden = false;
-  adPrompt.classList.add('open');
-  adPrompt.setAttribute('aria-hidden', 'false');
-  document.body.classList.add('ad-prompt-open');
-}
-
 panels.forEach((panel) => panel.trigger.addEventListener('click', () => showPanel(panel)));
 notificationButton.addEventListener('click', toggleNotifications);
 closeMenu.addEventListener('click', closePanels);
@@ -442,17 +405,9 @@ document.querySelectorAll('[data-category]').forEach((link) => {
 });
 
 window.addEventListener('popstate', renderRoute);
-document.querySelector('#closeAdPrompt').addEventListener('click', dismissAdPrompt);
-document.querySelector('#allowAds').addEventListener('click', dismissAdPrompt);
-adPrompt.addEventListener('click', (event) => {
-  if (event.target === adPrompt) dismissAdPrompt();
-});
 document.addEventListener('keydown', (event) => {
-  if (event.key !== 'Escape') return;
-  if (!adPrompt.hidden) dismissAdPrompt();
-  else closePanels();
+  if (event.key === 'Escape') closePanels();
 });
 
 renderNews();
 renderRoute();
-window.setTimeout(showAdPrompt, 900);
