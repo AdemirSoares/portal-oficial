@@ -16,6 +16,8 @@ const categories = [
 
 const youtubeUrl = 'https://www.youtube.com/@portaloficial-n1j';
 const instagramUrl = 'https://www.instagram.com/portal__oficial?avpt=OTJidXdxNDh2b2R0';
+const youtubeMark = '<span class="youtube-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M9 5v14l11-7z"/></svg></span>';
+const instagramMark = '<span class="instagram-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></span>';
 const wordmark = '<span class="brand-wordmark"><span>PORTAL</span><b>OFICIAL</b></span>';
 
 const news = [
@@ -72,11 +74,11 @@ document.querySelector('#app').innerHTML = `
       <div class="header-actions">
         <a class="video-link" href="${youtubeUrl}" target="_blank" rel="noopener noreferrer" aria-label="Assistir ao canal do Portal Oficial no YouTube">
           <span>Portal Oficial</span>
-          <span class="play">▶</span>
+          ${youtubeMark}
         </a>
         <a class="instagram-link" href="${instagramUrl}" target="_blank" rel="noopener noreferrer" aria-label="Instagram do Portal Oficial">
           <span>Instagram</span>
-          <span class="instagram-mark"><img src="https://cdn.simpleicons.org/instagram/FFFFFF" alt="" /></span>
+          ${instagramMark}
         </a>
         <button class="search-button" id="searchButton" aria-label="Buscar" aria-controls="searchPanel" aria-expanded="false">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
@@ -91,6 +93,7 @@ document.querySelector('#app').innerHTML = `
   </header>
   <div class="mobile-channel">
     <a href="${youtubeUrl}" target="_blank" rel="noopener noreferrer">Acompanhe o Portal Oficial no <strong>YouTube</strong></a>
+    <a class="mobile-instagram" href="${instagramUrl}" target="_blank" rel="noopener noreferrer">Siga o Portal Oficial no <strong>Instagram</strong></a>
   </div>
 
   <main>
@@ -160,8 +163,8 @@ document.querySelector('#app').innerHTML = `
       <button id="closeMenu" aria-label="Fechar menu">×</button>
     </div>
     <div class="panel-socials">
-      <a href="${youtubeUrl}" target="_blank" rel="noopener noreferrer">YouTube</a>
-      <a href="${instagramUrl}" target="_blank" rel="noopener noreferrer">Instagram</a>
+      <a href="${youtubeUrl}" target="_blank" rel="noopener noreferrer">${youtubeMark} YouTube</a>
+      <a href="${instagramUrl}" target="_blank" rel="noopener noreferrer">${instagramMark} Instagram</a>
     </div>
     <nav aria-label="Editorias">
       ${categories.map((category) => `<a href="#/${categorySlug(category)}" data-category="${category}">${category}</a>`).join('')}
