@@ -1,5 +1,4 @@
 import { supabase } from '../supabase.js';
-import './auth.css';
 
 const recoveryPath = '/admin/redefinir-senha';
 const recoveryRoute = window.location.pathname.replace(/\/$/, '') === recoveryPath;
