@@ -882,13 +882,8 @@ main {
   }
 
   .mobile-channel {
-    display: grid;
-    gap: 6px;
+    display: block;
     padding: 6px 12px 0;
-  }
-
-  #app:has(.home-page[hidden]) .mobile-instagram {
-    display: none;
   }
 
   .mobile-channel a {

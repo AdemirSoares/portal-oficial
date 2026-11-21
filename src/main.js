@@ -93,7 +93,6 @@ document.querySelector('#app').innerHTML = `
   </header>
   <div class="mobile-channel">
     <a href="${youtubeUrl}" target="_blank" rel="noopener noreferrer">Acompanhe o Portal Oficial no <strong>YouTube</strong></a>
-    <a class="mobile-instagram" href="${instagramUrl}" target="_blank" rel="noopener noreferrer">Siga o Portal Oficial no <strong>Instagram</strong></a>
   </div>
 
   <main>
