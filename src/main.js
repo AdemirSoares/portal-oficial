@@ -14,6 +14,10 @@ const categories = [
   'Esportes',
 ];
 
+const youtubeUrl = 'https://www.youtube.com/@portaloficial-n1j';
+const instagramUrl = 'https://www.instagram.com/portal__oficial?avpt=OTJidXdxNDh2b2R0';
+const wordmark = '<span class="brand-wordmark"><span>PORTAL</span><b>OFICIAL</b></span>';
+
 const news = [
   {
     category: 'Brasil',
@@ -51,30 +55,30 @@ document.querySelector('#app').innerHTML = `
   <header class="site-header">
     <div class="header-inner">
       <div class="utility-bar">
-        <button class="menu-button" id="menuButton" aria-label="Abrir menu">
+        <button class="menu-button" id="menuButton" aria-label="Abrir menu" aria-controls="mobilePanel" aria-expanded="false">
           <span></span><span></span><span></span>
           <b>Menu</b>
         </button>
-        <button class="notification-button" id="notificationButton" type="button" aria-pressed="false">
+        <button class="notification-button" id="notificationButton" type="button" aria-pressed="false" aria-label="Ativar notificações">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M13.7 21h-3.4" /></svg>
           <span>Ative nossas notificações</span>
         </button>
       </div>
 
       <a class="brand" href="/" aria-label="Portal Oficial">
-        <span class="brand-wordmark"><span>PORTAL</span><b>OFICIAL</b></span>
+        ${wordmark}
       </a>
 
       <div class="header-actions">
-        <a class="video-link" href="https://www.youtube.com/@portaloficial-n1j" target="_blank" rel="noopener noreferrer" aria-label="Assistir ao canal do Portal Oficial no YouTube">
+        <a class="video-link" href="${youtubeUrl}" target="_blank" rel="noopener noreferrer" aria-label="Assistir ao canal do Portal Oficial no YouTube">
           <span>Portal Oficial</span>
           <span class="play">▶</span>
         </a>
-        <a class="instagram-link" href="https://www.instagram.com/portal__oficial?avpt=OTJidXdxNDh2b2R0" target="_blank" rel="noopener noreferrer" aria-label="Instagram do Portal Oficial">
+        <a class="instagram-link" href="${instagramUrl}" target="_blank" rel="noopener noreferrer" aria-label="Instagram do Portal Oficial">
           <span>Instagram</span>
           <span class="instagram-mark"><img src="https://cdn.simpleicons.org/instagram/FFFFFF" alt="" /></span>
         </a>
-        <button class="search-button" id="searchButton" aria-label="Buscar">
+        <button class="search-button" id="searchButton" aria-label="Buscar" aria-controls="searchPanel" aria-expanded="false">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
           <b>Busca</b>
         </button>
@@ -85,6 +89,9 @@ document.querySelector('#app').innerHTML = `
       </nav>
     </div>
   </header>
+  <div class="mobile-channel">
+    <a href="${youtubeUrl}" target="_blank" rel="noopener noreferrer">Acompanhe o Portal Oficial no <strong>YouTube</strong></a>
+  </div>
 
   <main>
     <div class="home-page" id="homePage">
@@ -147,21 +154,22 @@ document.querySelector('#app').innerHTML = `
     </section>
   </main>
 
-  <div class="mobile-panel" id="mobilePanel" aria-hidden="true" inert>
+  <div class="mobile-panel" id="mobilePanel" role="dialog" aria-modal="true" aria-label="Menu" aria-hidden="true" inert>
     <div class="panel-head">
-      <strong>Portal Oficial</strong>
+      ${wordmark}
       <button id="closeMenu" aria-label="Fechar menu">×</button>
     </div>
-    <nav>
+    <div class="panel-socials">
+      <a href="${youtubeUrl}" target="_blank" rel="noopener noreferrer">YouTube</a>
+      <a href="${instagramUrl}" target="_blank" rel="noopener noreferrer">Instagram</a>
+    </div>
+    <nav aria-label="Editorias">
       ${categories.map((category) => `<a href="#/${categorySlug(category)}" data-category="${category}">${category}</a>`).join('')}
     </nav>
-    <div class="panel-socials">
-      <a href="https://www.youtube.com/@portaloficial-n1j" target="_blank" rel="noopener noreferrer">YouTube</a>
-      <a href="https://www.instagram.com/portal__oficial?avpt=OTJidXdxNDh2b2R0" target="_blank" rel="noopener noreferrer">Instagram</a>
-    </div>
   </div>
   <div class="overlay" id="overlay"></div>
-  <section class="search-panel" id="searchPanel" aria-hidden="true" inert>
+  <section class="search-panel" id="searchPanel" role="dialog" aria-modal="true" aria-label="Buscar notícias" aria-hidden="true" inert>
+    <div class="search-brand">${wordmark}</div>
     <form id="searchForm" role="search">
       <label for="searchInput">Buscar notícias</label>
       <div class="search-field">
@@ -216,6 +224,7 @@ function showToast(message) {
 
 function updateNotificationButton() {
   notificationButton.setAttribute('aria-pressed', String(notificationsEnabled));
+  notificationButton.setAttribute('aria-label', notificationsEnabled ? 'Desativar notificações' : 'Ativar notificações');
   notificationButton.querySelector('span').textContent = notificationsEnabled
     ? 'Notificações ativadas'
     : 'Ative nossas notificações';
@@ -337,24 +346,42 @@ function openCategory(category) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+const panels = [
+  { element: mobilePanel, trigger: menuButton, initialFocus: closeMenu },
+  { element: searchPanel, trigger: searchButton, initialFocus: searchInput },
+];
+const pageContent = document.querySelectorAll('.site-header, .mobile-channel, main');
+let activePanel = null;
+
+function showPanel(nextPanel = null) {
+  const previousPanel = activePanel;
+  if (previousPanel === nextPanel) return;
+
+  activePanel = nextPanel;
+  pageContent.forEach((element) => { element.inert = Boolean(nextPanel); });
+  overlay.classList.toggle('open', Boolean(nextPanel));
+  document.body.classList.toggle('panel-open', Boolean(nextPanel));
+
+  if (nextPanel) {
+    nextPanel.element.inert = false;
+    nextPanel.element.removeAttribute('aria-hidden');
+    nextPanel.element.classList.add('open');
+    nextPanel.trigger.setAttribute('aria-expanded', 'true');
+    nextPanel.initialFocus.focus({ preventScroll: true });
+  } else {
+    previousPanel.trigger.focus({ preventScroll: true });
+  }
+
+  if (previousPanel) {
+    previousPanel.element.inert = true;
+    previousPanel.element.setAttribute('aria-hidden', 'true');
+    previousPanel.element.classList.remove('open');
+    previousPanel.trigger.setAttribute('aria-expanded', 'false');
+  }
+}
+
 function closePanels() {
-  setMenu(false);
-  setSearch(false);
-}
-
-function setMenu(open) {
-  mobilePanel.classList.toggle('open', open);
-  overlay.classList.toggle('open', open);
-  mobilePanel.setAttribute('aria-hidden', String(!open));
-  mobilePanel.inert = !open;
-}
-
-function setSearch(open) {
-  searchPanel.classList.toggle('open', open);
-  overlay.classList.toggle('open', open);
-  searchPanel.setAttribute('aria-hidden', String(!open));
-  searchPanel.inert = !open;
-  if (open) searchInput.focus();
+  showPanel();
 }
 
 function dismissAdPrompt() {
@@ -384,18 +411,11 @@ function showAdPrompt() {
   document.body.classList.add('ad-prompt-open');
 }
 
-menuButton.addEventListener('click', () => {
-  setSearch(false);
-  setMenu(true);
-});
+panels.forEach((panel) => panel.trigger.addEventListener('click', () => showPanel(panel)));
 notificationButton.addEventListener('click', toggleNotifications);
-closeMenu.addEventListener('click', () => setMenu(false));
+closeMenu.addEventListener('click', closePanels);
 overlay.addEventListener('click', closePanels);
-searchButton.addEventListener('click', () => {
-  setMenu(false);
-  setSearch(true);
-});
-document.querySelector('#closeSearch').addEventListener('click', () => setSearch(false));
+document.querySelector('#closeSearch').addEventListener('click', closePanels);
 searchForm.addEventListener('submit', (event) => {
   event.preventDefault();
   searchTerm = searchInput.value.trim();
@@ -425,7 +445,9 @@ adPrompt.addEventListener('click', (event) => {
   if (event.target === adPrompt) dismissAdPrompt();
 });
 document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape' && !adPrompt.hidden) dismissAdPrompt();
+  if (event.key !== 'Escape') return;
+  if (!adPrompt.hidden) dismissAdPrompt();
+  else closePanels();
 });
 
 renderNews();
