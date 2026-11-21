@@ -1,0 +1,28 @@
+{
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "functions": {
+    "api/public.js": { "includeFiles": "dist/index.html" }
+  },
+  "rewrites": [
+    { "source": "/admin", "destination": "/index.html" },
+    { "source": "/admin/redefinir-senha", "destination": "/index.html" },
+    { "source": "/ultimas-noticias", "destination": "/index.html" },
+    { "source": "/editoria/:slug", "destination": "/index.html" },
+    { "source": "/busca", "destination": "/index.html" },
+    { "source": "/noticia/:slug", "destination": "/api/public?route=article&slug=:slug" },
+    { "source": "/midia/:article/:file", "destination": "/api/public?route=media&path=:article/:file" },
+    { "source": "/sitemap.xml", "destination": "/api/public?route=sitemap" },
+    { "source": "/robots.txt", "destination": "/api/public?route=robots" }
+  ],
+  "headers": [
+    {
+      "source": "/admin/:path*",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
+        { "key": "Referrer-Policy", "value": "no-referrer" }
+      ]
+    }
+  ]
+}

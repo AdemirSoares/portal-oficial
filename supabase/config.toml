@@ -1,0 +1,18 @@
+project_id = "portal-oficial"
+
+[db]
+major_version = 17
+
+[db.seed]
+enabled = false
+
+[auth]
+enable_signup = false
+site_url = "http://localhost:5173"
+additional_redirect_urls = [
+  "http://localhost:5173/admin/redefinir-senha",
+  "http://127.0.0.1:5173/admin/redefinir-senha",
+  "http://localhost:4173/admin/redefinir-senha",
+  "http://127.0.0.1:4173/admin/redefinir-senha",
+]
+minimum_password_length = 8

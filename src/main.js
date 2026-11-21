@@ -1,57 +1,11 @@
 import './style.css';
-
-const categories = [
-  'Últimas notícias',
-  'Brasil',
-  'DF',
-  'GO',
-  'SP',
-  'MG',
-  'Mundo',
-  'Entretenimento',
-  'Vida & Estilo',
-  'Saúde',
-  'Esportes',
-];
+import { mountPublicNews } from './public/routes.js';
 
 const youtubeUrl = 'https://www.youtube.com/@portaloficial-n1j';
 const instagramUrl = 'https://www.instagram.com/portal__oficial?avpt=OTJidXdxNDh2b2R0';
 const youtubeMark = '<span class="youtube-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M9 5v14l11-7z"/></svg></span>';
 const instagramMark = '<span class="instagram-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></span>';
 const wordmark = '<span class="brand-wordmark"><span>PORTAL</span><b>OFICIAL</b></span>';
-
-const news = [
-  {
-    category: 'Brasil',
-    title: 'Governo anuncia novo pacote de medidas para cidades e estados',
-    image: 'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?auto=format&fit=crop&w=900&q=85',
-  },
-  {
-    category: 'Economia',
-    title: 'Mercado reage à divulgação dos novos indicadores econômicos',
-    image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=900&q=85',
-  },
-  {
-    category: 'Esportes',
-    title: 'Clubes se preparam para decisões decisivas no campeonato',
-    image: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=900&q=85',
-  },
-  {
-    category: 'Tecnologia',
-    title: 'Nova geração de soluções digitais transforma o atendimento',
-    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=85',
-  },
-];
-
-function categorySlug(category) {
-  return category
-    .toLowerCase()
-    .replace(/&/g, ' e ')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '');
-}
 
 document.querySelector('#app').innerHTML = `
   <header class="site-header">
@@ -87,7 +41,6 @@ document.querySelector('#app').innerHTML = `
       </div>
 
       <nav class="category-nav" id="categoryNav" aria-label="Categorias">
-        ${categories.map((category) => `<a href="#/${categorySlug(category)}" data-category="${category}">${category}</a>`).join('')}
       </nav>
     </div>
   </header>
@@ -96,40 +49,15 @@ document.querySelector('#app').innerHTML = `
   </div>
 
   <main>
-    <div class="home-page" id="homePage">
+    <p class="empty-state public-status" id="publicStatus" role="status" hidden></p>
+    <div class="home-page" id="homePage" hidden>
       <div class="ad-slot" aria-label="Espaço publicitário"></div>
-      <section class="featured-section">
-        <article class="featured-card">
-          <div class="featured-image">
-            <img src="https://images.unsplash.com/photo-1521295121783-8a321d551ad2?auto=format&fit=crop&w=1400&q=88" alt="Cidades e mobilidade urbana" />
-          </div>
-          <div class="featured-copy">
-            <span class="eyebrow">Brasil</span>
-            <h1>Prefeituras anunciam plano para modernizar serviços públicos</h1>
-            <p>Gestores apresentam iniciativas que prometem mais eficiência, transparência e rapidez no atendimento à população.</p>
-          </div>
-        </article>
-
-        <div class="headline-list">
-          ${news.slice(0, 1).map((item) => `
-            <article>
-              <img src="${item.image}" alt="" />
-              <div>
-                <span>${item.category}</span>
-                <h2>${item.title}</h2>
-              </div>
-            </article>
-          `).join('')}
-          <ul class="related-headlines">
-            ${news.slice(1, 3).map((item) => `<li>${item.title}</li>`).join('')}
-          </ul>
-        </div>
-      </section>
+      <section class="featured-section" id="featuredSection" hidden></section>
 
       <section class="latest-section" id="ultimas">
         <div class="section-heading">
           <h2>Últimas notícias</h2>
-          <a href="#/${categorySlug('Últimas notícias')}" data-category="Últimas notícias">Ver tudo</a>
+          <a href="/ultimas-noticias">Ver tudo</a>
         </div>
         <div class="news-grid" id="newsGrid"></div>
         <p class="empty-state" id="emptyState" hidden>Nenhuma notícia encontrada para esta busca.</p>
@@ -147,6 +75,7 @@ document.querySelector('#app').innerHTML = `
           <article class="category-feature" id="categoryFeature"></article>
           <div class="category-news-grid" id="categoryNewsGrid"></div>
           <p class="empty-state category-empty" id="categoryEmpty" hidden>Ainda não há notícias publicadas nesta editoria.</p>
+          <nav class="news-pagination" id="newsPagination" aria-label="Páginas de notícias" hidden></nav>
         </div>
         <aside class="category-ads" aria-label="Espaços publicitários">
           <div class="ad-rectangle"></div>
@@ -154,6 +83,7 @@ document.querySelector('#app').innerHTML = `
         </aside>
       </div>
     </section>
+    <div id="articlePage" hidden></div>
   </main>
 
   <div class="mobile-panel" id="mobilePanel" role="dialog" aria-modal="true" aria-label="Menu" aria-hidden="true" inert>
@@ -166,7 +96,6 @@ document.querySelector('#app').innerHTML = `
       <a href="${instagramUrl}" target="_blank" rel="noopener noreferrer">${instagramMark} Instagram</a>
     </div>
     <nav aria-label="Editorias">
-      ${categories.map((category) => `<a href="#/${categorySlug(category)}" data-category="${category}">${category}</a>`).join('')}
     </nav>
   </div>
   <div class="overlay" id="overlay"></div>
@@ -175,7 +104,7 @@ document.querySelector('#app').innerHTML = `
     <form id="searchForm" role="search">
       <label for="searchInput">Buscar notícias</label>
       <div class="search-field">
-        <input id="searchInput" type="search" placeholder="Digite um assunto ou palavra-chave" />
+        <input id="searchInput" type="search" maxlength="120" placeholder="Digite um assunto ou palavra-chave" />
         <button type="submit">Buscar</button>
       </div>
     </form>
@@ -191,19 +120,8 @@ const closeMenu = document.querySelector('#closeMenu');
 const searchButton = document.querySelector('#searchButton');
 const searchPanel = document.querySelector('#searchPanel');
 const searchInput = document.querySelector('#searchInput');
-const searchForm = document.querySelector('#searchForm');
-const newsGrid = document.querySelector('#newsGrid');
-const emptyState = document.querySelector('#emptyState');
-const homePage = document.querySelector('#homePage');
-const categoryPage = document.querySelector('#categoryPage');
-const categoryTitle = document.querySelector('#categoryTitle');
-const categoryBreadcrumb = document.querySelector('#categoryBreadcrumb');
-const categoryFeature = document.querySelector('#categoryFeature');
-const categoryNewsGrid = document.querySelector('#categoryNewsGrid');
-const categoryEmpty = document.querySelector('#categoryEmpty');
 const notificationButton = document.querySelector('#notificationButton');
 const toast = document.querySelector('#toast');
-let searchTerm = '';
 let notificationsEnabled = false;
 let toastTimeout;
 
@@ -263,81 +181,6 @@ async function toggleNotifications() {
   }
 }
 
-function renderNews() {
-  const visibleNews = news.filter((item) => {
-    const searchableText = `${item.category} ${item.title}`.toLocaleLowerCase('pt-BR');
-    return searchableText.includes(searchTerm.toLocaleLowerCase('pt-BR'));
-  });
-
-  newsGrid.innerHTML = visibleNews.map((item) => `
-    <article class="news-card">
-      <img src="${item.image}" alt="" />
-      <div class="news-card-copy">
-        <span>${item.category}</span>
-        <h3>${item.title}</h3>
-      </div>
-    </article>
-  `).join('');
-  emptyState.hidden = visibleNews.length > 0;
-}
-
-function renderCategory(category) {
-  const stories = category === 'Últimas notícias'
-    ? news
-    : news.filter((item) => item.category.toLocaleLowerCase('pt-BR') === category.toLocaleLowerCase('pt-BR'));
-
-  categoryTitle.textContent = category.toLocaleUpperCase('pt-BR');
-  categoryBreadcrumb.textContent = category;
-  categoryFeature.hidden = stories.length === 0;
-  categoryFeature.innerHTML = stories.length
-    ? `
-      <img src="${stories[0].image}" alt="" />
-      <div class="category-feature-copy">
-        <span>${stories[0].category}</span>
-        <h2>${stories[0].title}</h2>
-        <p>Leia as últimas informações e acompanhe os principais acontecimentos desta editoria.</p>
-      </div>
-    `
-    : '';
-  categoryNewsGrid.innerHTML = stories.slice(1).map((item) => `
-    <article class="news-card">
-      <img src="${item.image}" alt="" />
-      <div class="news-card-copy">
-        <span>${item.category}</span>
-        <h3>${item.title}</h3>
-      </div>
-    </article>
-  `).join('');
-  categoryEmpty.hidden = stories.length > 0;
-}
-
-function renderRoute() {
-  const slug = window.location.hash.replace(/^#\/?/, '').split('/')[0];
-  const category = categories.find((item) => categorySlug(item) === slug);
-
-  homePage.hidden = Boolean(category);
-  categoryPage.hidden = !category;
-  if (category) {
-    renderCategory(category);
-    document.title = `${category} | Portal Oficial`;
-  } else {
-    document.title = 'Portal Oficial | Notícias';
-  }
-}
-
-function openCategory(category) {
-  const nextHash = `#/${categorySlug(category)}`;
-  if (window.location.hash !== nextHash) {
-    window.history.pushState({ category }, '', nextHash);
-  }
-  searchTerm = '';
-  searchInput.value = '';
-  renderRoute();
-  renderNews();
-  closePanels();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
 const panels = [
   { element: mobilePanel, trigger: menuButton, initialFocus: closeMenu },
   { element: searchPanel, trigger: searchButton, initialFocus: searchInput },
@@ -381,32 +224,8 @@ notificationButton.addEventListener('click', toggleNotifications);
 closeMenu.addEventListener('click', closePanels);
 overlay.addEventListener('click', closePanels);
 document.querySelector('#closeSearch').addEventListener('click', closePanels);
-searchForm.addEventListener('submit', (event) => {
-  event.preventDefault();
-  searchTerm = searchInput.value.trim();
-  homePage.hidden = false;
-  categoryPage.hidden = true;
-  window.history.pushState(null, '', `${window.location.pathname}${window.location.search}`);
-  document.title = 'Resultados da busca | Portal Oficial';
-  renderNews();
-  closePanels();
-  document.querySelector('#ultimas').scrollIntoView({ behavior: 'smooth' });
-});
-searchInput.addEventListener('input', () => {
-  searchTerm = searchInput.value.trim();
-  if (!homePage.hidden) renderNews();
-});
-document.querySelectorAll('[data-category]').forEach((link) => {
-  link.addEventListener('click', (event) => {
-    event.preventDefault();
-    openCategory(link.dataset.category);
-  });
-});
-
-window.addEventListener('popstate', renderRoute);
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') closePanels();
 });
 
-renderNews();
-renderRoute();
+mountPublicNews(closePanels);
